@@ -1,6 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-/* appearance */
 static const char font[]            =
   "-*-stlarch-*-*-*-*-16-*-*-*-*-*-*-*"
   ","
@@ -19,35 +18,21 @@ static const Bool showbar           = True;      /* False means no bar */
 static const Bool topbar            = False;     /* False means bottom bar */
 static const unsigned int bottomgap = 16;
 
-/* tagging */
-
 static const char *tags[] = {"","","","","","","","",""};
 
 static const Rule rules[] = {
-  /* class,        instance,   title,            tags mask,                           isfloating,  monitor */
-  { "XWrits",      NULL,       NULL,             ~0,                                  True,        -1 },
-  { NULL,          "DIALOG",   NULL,             0,                                   True,        -1 },
-  { NULL/*xev*/,   NULL,       "Event Tester",   0,                                   True,        -1 },
-  { "XFontSel",    NULL,       NULL,             0,                                   True,        -1 },
-  { "Xmessage",    NULL,       NULL,             0,                                   True,        -1 },
-  { "Xmag",        NULL,       NULL,             0,                                   True,        -1 },
-  { "XmBDFEdit",   NULL,       NULL,             0,                                   True,        -1 },
-  { "Display",     NULL,       NULL,             0,                                   True,        -1 },
-  { "Gimp",        NULL,       NULL,             0,                                   True,        -1 },
-  { "MPlayer",     NULL,       NULL,             0,                                   True,        -1 },
-  { "trayer",      NULL,       NULL,             1,                                   True,        -1 },
-  { "Claws-mail",  NULL,       NULL,             1 << 1,   False,       -1 },
-  { "Liferea",     NULL,       NULL,             1 << 2,   False,       -1 },
-  { "Zim",         NULL,       NULL,             1 << 5,   False,       -1 },
-  { "Skype",       NULL,       NULL,             1 << 3,   False,       -1 },
-  { "Pidgin",      NULL,       NULL,             1 << 3,   False,       -1 },
-  { "rdesktop",    NULL,       NULL,             1 << 8,   False,       -1 },
-  { "Vncviewer",   NULL,       NULL,             1 << 8,   False,       -1 },
+  /* class,     instance, title, tags mask, isfloating, monitor */
+  { NULL,       "DIALOG", NULL,  0,         True,       -1 },
+  { "XFontSel", NULL,     NULL,  0,         True,       -1 },
+  { "Xmessage", NULL,     NULL,  0,         True,       -1 },
+  { "Xmag",     NULL,     NULL,  0,         True,       -1 },
+  { "Display",  NULL,     NULL,  0,         True,       -1 },
+  { "Skype",    NULL,     NULL,  1 << 3,    False,      -1 },
 };
 
 /* layout(s) */
-static const float mfact      = 0.50; /* factor of master area size [0.05..0.95] */
-static const int nmaster      = 1;    /* number of clients in master area */
+static const int nmaster      = 1;     /* number of clients in master area */
+static const float mfact      = 0.50;  /* factor of master area size [0.05..0.95] */
 static const Bool resizehints = False; /* True means respect size hints in tiled resizals */
 
 #include "grid.c"
@@ -55,63 +40,124 @@ static const Bool resizehints = False; /* True means respect size hints in tiled
 #include "bstack.c"
 #include "bstackhoriz.c"
 
-/* first entry is default */
 /* no layout function means floating behavior */
-
-static const Layout layouts[] = {{"", tile},{"", NULL},{"", monocle},{"", grid},{"", dwindle},{"", spiral},{"", bstack},{"", bstackhoriz}};
+static const Layout layouts[] = {
+  {"", tile},
+  {"", NULL},
+  {"", monocle},
+  {"", grid},
+  {"", dwindle},
+  {"", spiral},
+  {"", bstack},
+  {"", bstackhoriz}
+};
 
 /* key definitions */
 #define MODKEY Mod4Mask
 #define ALTKEY Mod1Mask
-#define TAGKEYS(KEY,TAG)																								\
+#define TAGKEYS(KEY,TAG)                                                \
   { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
   { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
   { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
   { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
-/* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/bash", "-c", cmd, NULL } }
 
 /* commands */
-static const char *dmenucmd[] = { "/usr/bin/dmenu_run", "-fn", font, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
-
-static const char *termcmd[] = { "urxvt", NULL };
-static const char *browser_cmd[] = { "google-chrome", NULL };
-static const char *filer_cmd[] = { "nautilus", NULL };
-static const char *editor_cmd[] = { "emacs-24.0.92 -nw -l ~/.emacs.d/min-init.el", NULL };
-static const char *lockcmd[]       = { "slock", NULL };
-static const char *suspendcmd[]    = { "dbus-send", "--system", "--print-reply", "--dest=org.freedesktop.UPower", "/org/freedesktop/UPower",
-"org.freedesktop.UPower.Suspend", NULL };
-static const char *hibernatecmd[]  = { "dbus-send", "--system", "--print-reply", "--dest=org.freedesktop.UPower", "/org/freedesktop/UPower",
-"org.freedesktop.UPower.Hibernate", NULL };
-static const char *rebootcmd[]     = { "dbus-send", "--system", "--print-reply", "--dest=org.freedesktop.ConsoleKit", "/org/freedesktop/ConsoleKit/Manager",
-"org.freedesktop.ConsoleKit.Manager.Restart", NULL };
-static const char *shutdowncmd[]   = { "dbus-send", "--system", "--print-reply", "--dest=org.freedesktop.ConsoleKit", "/org/freedesktop/ConsoleKit/Manager",
-"org.freedesktop.ConsoleKit.Manager.Stop", NULL };
+static const char *dmenucmd[] = {
+  "/usr/bin/dmenu_run",
+  "-fn",
+  font,
+  "-nb",
+  normbgcolor,
+  "-nf",
+  normfgcolor,
+  "-sb",
+  selbgcolor,
+  "-sf",
+  selfgcolor,
+  NULL
+};
+static const char *termcmd[] = {
+  "urxvt",
+  NULL
+};
+static const char *browser_cmd[] = {
+  "google-chrome",
+  NULL
+};
+static const char *filer_cmd[] = {
+  "nautilus",
+  NULL
+};
+static const char *editor_cmd[] = {
+  "emacs-24.0.92 -nw -l ~/.emacs.d/min-init.el",
+  NULL
+};
+static const char *lockcmd[] = {
+  "slock",
+  NULL
+};
+static const char *suspendcmd[] = {
+  "dbus-send",
+  "--system",
+  "--print-reply",
+  "--dest=org.freedesktop.UPower",
+  "/org/freedesktop/UPower",
+  "org.freedesktop.UPower.Suspend",
+  NULL
+};
+static const char *hibernatecmd[] = {
+  "dbus-send",
+  "--system",
+  "--print-reply",
+  "--dest=org.freedesktop.UPower",
+  "/org/freedesktop/UPower",
+  "org.freedesktop.UPower.Hibernate",
+  NULL
+};
+static const char *rebootcmd[] = {
+  "dbus-send",
+  "--system",
+  "--print-reply",
+  "--dest=org.freedesktop.ConsoleKit",
+  "/org/freedesktop/ConsoleKit/Manager",
+  "org.freedesktop.ConsoleKit.Manager.Restart",
+  NULL
+};
+static const char *shutdowncmd[] = {
+  "dbus-send",
+  "--system",
+  "--print-reply",
+  "--dest=org.freedesktop.ConsoleKit",
+  "/org/freedesktop/ConsoleKit/Manager",
+  "org.freedesktop.ConsoleKit.Manager.Stop",
+  NULL
+};
 
 #include "movestack.c"
 #include "shiftview.c"
 static Key keys[] = {
   /* modifier,                     key,               function,        argument */
   { MODKEY,                        XK_e,              spawn,           {.v = dmenucmd } },
-  { MODKEY,                        XK_x,              spawn,           {.v = termcmd } },
-  { MODKEY,                        XK_k,              spawn,           {.v = browser_cmd } },
+  { MODKEY,                        XK_k,              spawn,           {.v = termcmd } },
+  { MODKEY,                        XK_x,              spawn,           {.v = browser_cmd } },
   { MODKEY,                        XK_j,              spawn,           {.v = filer_cmd } },
   { MODKEY,                        XK_q,              spawn,           {.v = editor_cmd } },
-	{ ControlMask|ALTKEY,            XK_l,              spawn,      		 {.v = lockcmd } },
-	{ ControlMask|ALTKEY,						 XK_s,							spawn,					 {.v = suspendcmd } },
-	{ ControlMask|ALTKEY,						 XK_h,							spawn,					 {.v = hibernatecmd } },
-	{ ControlMask|ALTKEY,						 XK_r,							spawn,					 {.v = rebootcmd } },
-	{ ControlMask|ALTKEY,						 XK_q,							spawn,					 {.v = shutdowncmd } },
-	{ MODKEY|ShiftMask,							 XK_m,							togglebar,	     {0} },
+  { ControlMask|ALTKEY,            XK_l,              spawn,           {.v = lockcmd } },
+  { ControlMask|ALTKEY,            XK_s,              spawn,           {.v = suspendcmd } },
+  { ControlMask|ALTKEY,            XK_h,              spawn,           {.v = hibernatecmd } },
+  { ControlMask|ALTKEY,            XK_r,              spawn,           {.v = rebootcmd } },
+  { ControlMask|ALTKEY,            XK_q,              spawn,           {.v = shutdowncmd } },
+  { MODKEY|ShiftMask,              XK_m,              togglebar,       {0} },
   { MODKEY,                        XK_n,              focusstack,      {.i = +1 } },
-  { MODKEY,                        XK_t,              focusstack,      {.i = -1 } },
-  { MODKEY|ControlMask,            XK_n,              movestack,       {.i = +1 } },
-  { MODKEY|ControlMask,            XK_t,              movestack,       {.i = -1 } },
+  { MODKEY,                        XK_s,              focusstack,      {.i = -1 } },
+  { MODKEY|ControlMask,            XK_h,              movestack,       {.i = +1 } },
+  { MODKEY|ControlMask,            XK_p,              movestack,       {.i = -1 } },
   { MODKEY,                        XK_i,              incnmaster,      {.i = +1 } },
   { MODKEY,                        XK_u,              incnmaster,      {.i = -1 } },
-  { MODKEY|ControlMask,            XK_h,              setmfact,        {.f = -0.05} },
-  { MODKEY|ControlMask,            XK_s,              setmfact,        {.f = +0.05} },
+  { MODKEY|ControlMask,            XK_p,              setmfact,        {.f = -0.05} },
+  { MODKEY|ControlMask,            XK_n,              setmfact,        {.f = +0.05} },
   { MODKEY,                        XK_Return,         zoom,            {0} },
   { MODKEY,                        XK_o,              view,            {0} },
   { MODKEY,                        XK_z,              setlayout,       {.v = &layouts[1]} },
@@ -124,11 +170,10 @@ static Key keys[] = {
   { MODKEY,                        XK_v,              setlayout,       {.v = &layouts[7]} },
   { MODKEY,                        XK_space,          setlayout,       {0} },
   { MODKEY|ShiftMask,              XK_space,          togglefloating,  {0} },
+  { MODKEY,                        XK_Delete,         killclient,      {0} },
   { MODKEY,                        XK_0,              view,            {.ui = ~0 } },
   { MODKEY|ControlMask,            XK_0,              view,            {.ui = 0 } },
   { MODKEY|ShiftMask,              XK_0,              tag,             {.ui = ~0 } },
-  { MODKEY|ControlMask|ShiftMask,  XK_0,              tag,             {.ui = 0 } },/*TODO*/
-  { MODKEY,                        XK_Delete,         killclient,      {0} },
   { MODKEY,                        XK_bracketleft,    focusmon,        {.i = -1 } },
   { MODKEY,                        XK_bracketright,   focusmon,        {.i = +1 } },
   { MODKEY|ShiftMask,              XK_bracketleft,    tagmon,          {.i = -1 } },
